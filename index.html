@@ -1,83 +1,200 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Chennai Map Explorer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
-<link rel="stylesheet" href="style.css">
+        body {
+            background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-<style>
-.header{
-text-align:center;
-padding:20px;
-}
+        .container {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 45px;
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 480px;
+            color: #fff;
+        }
 
-.map-container{
-width:90%;
-max-width:900px;
-margin:auto;
-}
+        h2 { text-align: center; margin-bottom: 35px; font-weight: 300; letter-spacing: 3px; }
 
-.map-frame{
-width:100%;
-height:500px;
-border:0;
-border-radius:8px;
-}
+        .form-group { margin-bottom: 22px; position: relative; }
 
-.content{
-width:90%;
-margin:auto;
-margin-top:30px;
-line-height:1.6;
-text-align:center;
-}
+        label { display: block; margin-bottom: 8px; font-size: 0.85em; color: #00d2ff; }
 
-.directory{
-margin-top:15px;
-font-size:18px;
-}
-</style>
+        input, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            outline: none;
+            transition: all 0.4s ease;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #00d2ff;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+        }
+
+        .error-text { color: #ff4d4d; font-size: 0.75em; margin-top: 6px; display: none; }
+
+        .valid { border-color: #00ff88 !important; }
+        .invalid { border-color: #ff4d4d !important; }
+
+        .pwd-toggle {
+            position: absolute;
+            right: 18px;
+            top: 42px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.4s;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            filter: brightness(1.2);
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="header">
-<h1>Chennai City Map</h1>
-<p style="color:#444;">Interactive Map with Directory Link</p>
+<div class="container">
+    <h2>REGISTRATION</h2>
+    <form id="regForm" novalidate>
+        
+        <div class="form-group">
+            <label>FIRST NAME</label>
+            <input type="text" id="firstName" placeholder="Min 6 characters">
+            <div id="firstNameError" class="error-text">Only alphabets allowed (min 6).</div>
+        </div>
+
+        <div class="form-group">
+            <label>LAST NAME</label>
+            <input type="text" id="lastName" placeholder="Your surname">
+            <div id="lastNameError" class="error-text">Last name is required.</div>
+        </div>
+
+        <div class="form-group">
+            <label>PASSWORD</label>
+            <input type="password" id="password" placeholder="••••••••">
+            <i class="fa-solid fa-eye pwd-toggle" id="togglePass"></i>
+            <div id="passwordError" class="error-text">Must be at least 6 characters.</div>
+        </div>
+
+        <div class="form-group">
+            <label>EMAIL</label>
+            <input type="email" id="email" placeholder="example@mail.com">
+            <div id="emailError" class="error-text">Enter a valid email address.</div>
+        </div>
+
+        <div class="form-group">
+            <label>MOBILE</label>
+            <input type="text" id="mobile" maxlength="10" placeholder="10 digits">
+            <div id="mobileError" class="error-text">Enter exactly 10 digits.</div>
+        </div>
+
+        <div class="form-group">
+            <label>ADDRESS</label>
+            <textarea id="address" rows="2" placeholder="Street details"></textarea>
+            <div id="addressError" class="error-text">Address cannot be empty.</div>
+        </div>
+
+        <button type="submit">SUBMIT</button>
+    </form>
 </div>
 
-<div class="map-container">
+<script>
+    const form = document.getElementById('regForm');
+    
+    const patterns = {
+        firstName: /^[A-Za-z]{6,}$/,
+        email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        mobile: /^[0-9]{10}$/
+    };
 
-<iframe class="map-frame"
-src="https://www.google.com/maps?q=chennai&output=embed">
-</iframe>
+    function validate(input, regex) {
+        const errorDiv = document.getElementById(input.id + 'Error');
+        let isValid = false;
 
-</div>
+        if (input.id === 'lastName' || input.id === 'address') {
+            isValid = input.value.trim().length > 0;
+        } else if (input.id === 'password') {
+            isValid = input.value.length >= 6;
+        } else {
+            isValid = regex.test(input.value);
+        }
 
-<div class="content">
+        if (isValid) {
+            input.classList.add('valid');
+            input.classList.remove('invalid');
+            errorDiv.style.display = 'none';
+        } else {
+            input.classList.add('invalid');
+            input.classList.remove('valid');
+            errorDiv.style.display = 'block';
+        }
+        return isValid;
+    }
 
-<div class="directory">
-<a href="https://en.wikipedia.org/wiki/Chennai" target="_blank">
-View Chennai Information (Wikipedia)
-</a>
-</div>
+    form.firstName.addEventListener('input', (e) => validate(e.target, patterns.firstName));
+    form.lastName.addEventListener('input', (e) => validate(e.target, null));
+    form.password.addEventListener('input', (e) => validate(e.target, null));
+    form.email.addEventListener('input', (e) => validate(e.target, patterns.email));
+    form.mobile.addEventListener('input', (e) => validate(e.target, patterns.mobile));
+    form.address.addEventListener('input', (e) => validate(e.target, null));
 
-<h2>About Chennai</h2>
+    document.getElementById('togglePass').addEventListener('click', function() {
+        const pwdInput = document.getElementById('password');
+        const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        pwdInput.setAttribute('type', type);
+        this.classList.toggle('fa-eye-slash');
+    });
 
-<p>
-Chennai is the capital of Tamil Nadu and one of India’s major metropolitan cities. It is a leading hub for information technology, automobile manufacturing, education, healthcare, and cultural heritage.
-</p> 
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const v1 = validate(form.firstName, patterns.firstName);
+        const v2 = validate(form.lastName, null);
+        const v3 = validate(form.password, null);
+        const v4 = validate(form.email, patterns.email);
+        const v5 = validate(form.mobile, patterns.mobile);
+        const v6 = validate(form.address, null);
 
-
-<h3>How to use</h3>
-
-
-<ul>
-<li>Use the embedded map to zoom and explore Chennai.</li>
-<li>Click the directory link above to open Chennai Wikipedia.</li>
-</ul>
-
-</div>
+        if (v1 && v2 && v3 && v4 && v5 && v6) {
+            alert("Success!");
+        }
+    });
+</script>
 
 </body>
 </html>
