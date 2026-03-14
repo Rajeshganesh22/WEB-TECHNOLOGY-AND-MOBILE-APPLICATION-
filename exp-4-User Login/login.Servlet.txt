@@ -1,0 +1,33 @@
+package com.demo;
+
+import java.io.IOException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+
+@WebServlet("/LoginServlet")
+
+public class LoginServlet extends HttpServlet {
+
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+throws ServletException, IOException {
+
+String username = request.getParameter("username");
+String password = request.getParameter("password");
+
+if(username.equals("admin") && password.equals("1234"))
+{
+HttpSession session = request.getSession();
+session.setAttribute("user", username);
+
+response.sendRedirect("dashboard");
+}
+else
+{
+response.getWriter().println("<h3 style='color:red;text-align:center;'>Invalid Login</h3>");
+response.getWriter().println("<center><a href='login.html'>Try Again</a></center>");
+}
+
+}
+}

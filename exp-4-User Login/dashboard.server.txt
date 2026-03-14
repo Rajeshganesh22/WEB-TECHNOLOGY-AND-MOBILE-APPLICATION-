@@ -1,0 +1,45 @@
+package com.demo;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+
+@WebServlet("/dashboard")
+
+public class DashboardServlet extends HttpServlet {
+
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+throws ServletException, IOException {
+
+HttpSession session = request.getSession(false);
+
+response.setContentType("text/html");
+PrintWriter out = response.getWriter();
+
+if(session!=null)
+{
+String user = (String)session.getAttribute("user");
+
+out.println("<html>");
+out.println("<body style='font-family:Arial;text-align:center;background:#f2f2f2;'>");
+
+out.println("<h1>Welcome "+user+"</h1>");
+out.println("<h3>Student Portal Dashboard</h3>");
+
+out.println("<p>This is a secured page after login.</p>");
+
+out.println("<a href='LogoutServlet'>Logout</a>");
+
+out.println("</body>");
+out.println("</html>");
+}
+else
+{
+response.sendRedirect("login.html");
+}
+
+}
+}
