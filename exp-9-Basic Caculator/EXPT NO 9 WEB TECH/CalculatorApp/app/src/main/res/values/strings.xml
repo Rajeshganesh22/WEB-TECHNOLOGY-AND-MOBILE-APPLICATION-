@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calculator</string>
+    <string name="error_div_zero">Error</string>
+    <string name="history_empty">No history yet</string>
+</resources>
